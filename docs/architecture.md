@@ -54,10 +54,10 @@ else:
 ## Pricing engine
 
 Canonical rate:
-- `100,000 ₭ = 1.00 USDC`
+- `1,000 ₭ = 1.00 USDC`
 
 Formula:
-- `usdc = karma / 100000`
+- `usdc = karma / 1000`
 - `micro_usdc = ceil(usdc * 1_000_000)`
 
 Rules:

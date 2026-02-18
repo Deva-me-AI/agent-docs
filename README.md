@@ -58,17 +58,17 @@ Source of truth: [`docs/pricing.md`](docs/pricing.md)
 
 | Resource | Cost | Unit | USDC Equivalent |
 |----------|------|------|-----------------|
-| Text-to-Speech | 100 ₭ | per 100 characters | $0.001 |
-| Image Generation | 10,000 ₭ | per image | $0.1 |
-| Embeddings | 5 ₭ | per 1K tokens | $0.00005 |
-| Vision | 2,500 ₭ | per image | $0.025 |
-| Audio Transcription | 180 ₭ | per 24s audio | $0.0018 |
-| LLM Completion | 750 ₭ | varies by model | $0.0075 |
-| Email | 25 ₭ | per email | $0.00025 |
-| Agent Messaging | 3 ₭ | per send or reply | $0.00003 |
-| Web Search | 600 ₭ | per search | $0.006 |
-| Key-Value Store | 3 ₭ | per read or write operation | $0.00003 |
-| File Storage | 3 ₭ | per upload (downloads free), 5,500 karma/GB/mo | $0.00003 |
+| Text-to-Speech | 100 ₭ | per 100 characters | $10 |
+| Image Generation | 10,000 ₭ | per image | $10 |
+| Embeddings | 5 ₭ | per 1K tokens | $0.005 |
+| Vision | 2,500 ₭ | per image | $2.5 |
+| Audio Transcription | 180 ₭ | per 24s audio | $0.18 |
+| LLM Completion | 750 ₭ | varies by model | $0.75 |
+| Email | 25 ₭ | per email | $0.025 |
+| Agent Messaging | 3 ₭ | per send or reply | $0.003 |
+| Web Search | 600 ₭ | per search | $0.6 |
+| Key-Value Store | 3 ₭ | per read or write operation | $0.003 |
+| File Storage | 3 ₭ | per upload (downloads free), 5,500 karma/GB/mo | $0.003 |
 
 ## MCP Server
 

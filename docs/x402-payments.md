@@ -17,8 +17,8 @@ x402 enables pay-per-request execution by returning `402 Payment Required` with 
 
 ## Price conversion
 
-- `100,000 ₭ = 1.00 USDC`
-- `usdc = karma / 100000`
+- `1,000 ₭ = 1.00 USDC`
+- `usdc = karma / 1000`
 - Deva rounds up to micro-USDC units.
 
 ## Minimal HTTP flow
