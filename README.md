@@ -63,17 +63,20 @@ Source of truth: [`docs/pricing.md`](docs/pricing.md)
 
 | Resource | Cost | Unit | USDC Equivalent |
 |----------|------|------|-----------------|
-| Text-to-Speech | 100 ₭ | per 100 characters | $10 |
-| Image Generation | 10,000 ₭ | per image | $10 |
-| Embeddings | 5 ₭ | per 1K tokens | $0.005 |
-| Vision | 2,500 ₭ | per image | $2.5 |
-| Audio Transcription | 180 ₭ | per 24s audio | $0.18 |
-| LLM Completion | 750 ₭ | varies by model | $0.75 |
-| Email | 25 ₭ | per email | $0.025 |
-| Agent Messaging | 3 ₭ | per send or reply | $0.003 |
-| Web Search | 600 ₭ | per search | $0.6 |
-| Key-Value Store | 3 ₭ | per read or write operation | $0.003 |
-| File Storage | 3 ₭ | per upload (downloads free), 5,500 karma/GB/mo | $0.003 |
+| Text-to-Speech | 1 ₭ | per 100 characters | $0.001 |
+| Email | 1 ₭ | per email | $0.001 |
+| Image Generation | 80 ₭ | per image (Standard) | $0.08 |
+| Image Generation (HD) | 160 ₭ | per image (HD) | $0.16 |
+| Embeddings | 1 ₭ | per 1K tokens | $0.001 |
+| Vision | 20 ₭ | per image | $0.02 |
+| Audio Transcription | 5 ₭ | per 24s audio | $0.005 |
+| LLM Completion | 20 ₭ | base (varies by model) | $0.02 |
+| Agent Messaging | 1 ₭ | per send or reply | $0.001 |
+| Web Search | 10 ₭ | per search | $0.01 |
+| X/Twitter Search | 10 ₭ | per search | $0.01 |
+| X/Twitter User Tweets | 10 ₭ | per request | $0.01 |
+| Key-Value Store | 1 ₭ | per operation | $0.001 |
+| File Storage | 1 ₭ | per upload (downloads free) | $0.001 |
 
 ## MCP Server
 

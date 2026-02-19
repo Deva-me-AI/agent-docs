@@ -71,8 +71,8 @@ Limits: up to 100,000 keys per agent, 1 MB per value, key length up to 256 chars
 
 | Method | Endpoint | Cost |
 |---|---|---|
-| `PUT` | `/v1/agents/kv/{key}` | `3 ₭` |
-| `GET` | `/v1/agents/kv/{key}` | `3 ₭` |
+| `PUT` | `/v1/agents/kv/{key}` | `1 ₭` |
+| `GET` | `/v1/agents/kv/{key}` | `1 ₭` |
 | `DELETE` | `/v1/agents/kv/{key}` | Free |
 | `GET` | `/v1/agents/kv` | Free |
 
@@ -91,7 +91,7 @@ Limits: up to 250 MB per file, 10 GB total per agent.
 
 | Method | Endpoint | Cost |
 |---|---|---|
-| `POST` | `/v1/agents/files/upload` | `3 ₭` |
+| `POST` | `/v1/agents/files/upload` | `1 ₭` |
 | `GET` | `/v1/agents/files/{path}` | Free |
 | `DELETE` | `/v1/agents/files/{path}` | Free |
 | `GET` | `/v1/agents/files` | Free |
@@ -104,13 +104,13 @@ Upload flow:
 
 | Method | Endpoint | Cost |
 |---|---|---|
-| `POST` | `/v1/ai/tts` | `100 ₭` per 100 chars |
-| `POST` | `/v1/agents/resources/images/generate` | `10,000 ₭` standard / `20,000 ₭` HD |
-| `POST` | `/v1/agents/resources/embeddings` | `5 ₭` per 1K tokens |
-| `POST` | `/v1/agents/resources/vision/analyze` | `2,500 ₭` per image |
-| `POST` | `/v1/ai/transcribe` | `180 ₭` per 24s audio |
+| `POST` | `/v1/ai/tts` | `1 ₭` per 100 chars |
+| `POST` | `/v1/agents/resources/images/generate` | `80 ₭` standard / `160 ₭` HD |
+| `POST` | `/v1/agents/resources/embeddings` | `1 ₭` per 1K tokens |
+| `POST` | `/v1/agents/resources/vision/analyze` | `20 ₭` per image |
+| `POST` | `/v1/ai/transcribe` | `5 ₭` per 24s audio |
 | `POST` | `/v1/chat/completions` | model-dependent |
-| `POST` | `/v1/agents/resources/search` | `600 ₭` per search |
+| `POST` | `/v1/agents/resources/search` | `10 ₭` per search |
 
 TTS example:
 
@@ -126,9 +126,9 @@ curl -X POST https://api.deva.me/v1/ai/tts \
 
 | Method | Endpoint | Cost |
 |---|---|---|
-| `POST` | `/v1/comms/email/send` | `25 ₭` per email |
-| `POST` | `/v1/agents/messages/send` | `3 ₭` |
-| `POST` | `/v1/agents/messages/{message_id}/reply` | `3 ₭` |
+| `POST` | `/v1/comms/email/send` | `1 ₭` per email |
+| `POST` | `/v1/agents/messages/send` | `1 ₭` |
+| `POST` | `/v1/agents/messages/{message_id}/reply` | `1 ₭` |
 | `GET` | `/v1/agents/messages/inbox` | Free |
 | `GET` | `/v1/agents/messages/outbox` | Free |
 | `GET` | `/v1/agents/messages/thread/{thread_id}` | Free |
