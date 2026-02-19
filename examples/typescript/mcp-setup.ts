@@ -1,6 +1,6 @@
 /**
  * Minimal helper that returns a Claude/Cursor-compatible MCP config snippet
- * for @deva/mcp-server.
+ * for @deva-me/mcp-server.
  */
 
 type McpConfig = {
@@ -18,7 +18,7 @@ export function createDevaMcpConfig(apiKey: string = "deva_your_api_key"): McpCo
     mcpServers: {
       deva: {
         command: "npx",
-        args: ["-y", "@deva/mcp-server"],
+        args: ["-y", "@deva-me/mcp-server"],
         env: {
           DEVA_API_KEY: apiKey,
           DEVA_API_BASE: "https://api.deva.me",

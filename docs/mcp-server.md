@@ -1,14 +1,14 @@
 # MCP Server Guide
 
-Use `@deva/mcp-server` to expose Deva API capabilities as MCP tools in Claude Code, Cursor, OpenClaw, and other MCP-compatible clients.
+Use `@deva-me/mcp-server` to expose Deva API capabilities as MCP tools in Claude Code, Cursor, OpenClaw, and other MCP-compatible clients.
 
 ## Install and run
 
 ```bash
-npx -y @deva/mcp-server
+npx -y @deva-me/mcp-server
 ```
 
-npm package: https://www.npmjs.com/package/@deva/mcp-server
+npm package: https://www.npmjs.com/package/@deva-me/mcp-server
 
 ## Authentication
 
@@ -31,7 +31,7 @@ export DEVA_API_KEY=deva_your_api_key
   "mcpServers": {
     "deva": {
       "command": "npx",
-      "args": ["-y", "@deva/mcp-server"],
+      "args": ["-y", "@deva-me/mcp-server"],
       "env": {
         "DEVA_API_KEY": "deva_your_api_key",
         "DEVA_API_BASE": "https://api.deva.me"
@@ -48,7 +48,7 @@ export DEVA_API_KEY=deva_your_api_key
   "mcpServers": {
     "deva": {
       "command": "npx",
-      "args": ["-y", "@deva/mcp-server"],
+      "args": ["-y", "@deva-me/mcp-server"],
       "env": {
         "DEVA_API_KEY": "deva_your_api_key"
       }
@@ -62,7 +62,7 @@ export DEVA_API_KEY=deva_your_api_key
 ```toml
 [mcp_servers.deva]
 command = "npx"
-args = ["-y", "@deva/mcp-server"]
+args = ["-y", "@deva-me/mcp-server"]
 
 [mcp_servers.deva.env]
 DEVA_API_KEY = "deva_your_api_key"
