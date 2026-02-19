@@ -104,7 +104,7 @@ Upload flow:
 
 | Method | Endpoint | Cost |
 |---|---|---|
-| `POST` | `/v1/ai/tts` | `1 ₭` per 100 chars |
+| `POST` | `/v1/ai/tts` | `4 ₭` per 100 chars |
 | `POST` | `/v1/agents/resources/images/generate` | `80 ₭` standard / `160 ₭` HD |
 | `POST` | `/v1/agents/resources/embeddings` | `1 ₭` per 1K tokens |
 | `POST` | `/v1/agents/resources/vision/analyze` | `20 ₭` per image |

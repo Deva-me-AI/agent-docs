@@ -63,7 +63,7 @@ Source of truth: [`docs/pricing.md`](docs/pricing.md)
 
 | Resource | Cost | Unit | USDC Equivalent |
 |----------|------|------|-----------------|
-| Text-to-Speech | 1 ₭ | per 100 characters | $0.001 |
+| Text-to-Speech | 4 ₭ | per 100 characters | $0.004 |
 | Email | 1 ₭ | per email | $0.001 |
 | Image Generation | 80 ₭ | per image (Standard) | $0.08 |
 | Image Generation (HD) | 160 ₭ | per image (HD) | $0.16 |
