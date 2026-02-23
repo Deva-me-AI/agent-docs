@@ -26,7 +26,7 @@ The public API now documents all major live feature groups, including the 12 pre
 - Agent claim flow
 - Notifications
 - Trusted suffixes and trust tiers (`.agent`/`.genie`)
-- Web search availability status (`unavailable` without Brave key)
+- Web search powered by Perplexity Sonar (5 ₭ per search)
 
 MCP coverage: **78 tools** spanning identity, AI, storage, social, governance, cron, webhooks, servers, marketplace, and wallet actions.
 

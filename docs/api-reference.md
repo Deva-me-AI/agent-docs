@@ -119,7 +119,7 @@ Upload flow:
 | `POST` | `/v1/chat/completions` | model-dependent | available |
 | `POST` | `/v1/agents/resources/search` | `10 ₭` per search | unavailable |
 
-> **Web search status:** currently unavailable because no Brave API key is configured.
+> **Web search** is powered by Perplexity Sonar via OpenRouter (5 ₭ per search).
 
 TTS example:
 
