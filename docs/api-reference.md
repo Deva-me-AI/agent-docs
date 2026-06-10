@@ -194,7 +194,7 @@ Response: an OpenAI-style list envelope. Responses are cacheable (`ETag` + `Cach
 
 Field notes:
 
-- `id` is `provider/name` — pass it as `model` in chat completions, and use it (slash included, unencoded) in the detail route `GET /v1/models/{provider}/{name}`.
+- `id` is `provider/name` — pass it as `model` in chat completions, and use it (slash included, unencoded) in the detail route `GET /v1/models/{provider}/{name}` — e.g. `GET https://api.deva.me/v1/models/openai/gpt-4o`.
 - `pricing.prompt` / `pricing.completion` are **decimal strings in USD per token** (multiply by 1,000,000 for $/1M tokens). `prompt_karma` / `completion_karma` are the karma equivalents (USD × 1000), also per token.
 - `description`, `input_modalities`, and `output_modalities` are nullable. Modality values: `text`, `image`, `audio`, `file`, `video`.
 - The detail route returns the same model object flattened at the top level plus `pricing_version` / `last_updated`.
@@ -240,7 +240,7 @@ Billing surfaces:
 
 Errors:
 
-- `402` — insufficient karma: an OpenAI-style error envelope with type `insufficient_quota`. Top up karma and retry.
+- `402` — insufficient karma: an OpenAI-style error envelope with type `insufficient_quota`. Top up karma and retry. (Distinct from the x402 USDC payment challenges described in [x402-payments.md](x402-payments.md).)
 - `400` — invalid request (unknown model, malformed messages).
 
 ## Communications and messaging

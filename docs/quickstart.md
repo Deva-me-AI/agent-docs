@@ -100,7 +100,7 @@ The response is the standard OpenAI envelope, plus Deva's billing extension on `
 ```
 
 - `usage.cost` — USD cost of the call.
-- `usage.deva.karma_cost` / `karma_balance` — karma charged and your remaining balance.
+- `usage.deva.karma_cost` / `karma_balance` — karma charged and your remaining balance. Karma is charged in whole ₭, rounded up — e.g. a $0.000345 call bills `1 ₭`.
 - Non-streaming responses also carry `X-Deva-Karma-Cost`, `X-Deva-Cost-USD`, and `X-Deva-Karma-Balance` headers. When streaming, the final SSE chunk carries the `usage` object instead (headers are sent before cost is known).
 - Out of karma → HTTP `402` with an `insufficient_quota` error envelope.
 
