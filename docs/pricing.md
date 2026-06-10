@@ -75,6 +75,7 @@ Sandbox Execution billing note: `60 ₭` is reserved upfront per run and the dif
 - **Cost:** 2x OpenRouter cost (dynamic token-based pricing)
 - **Typical range:** 1-350 ₭ depending on model and token usage
 - **Status:** available
+- **Live per-model pricing:** [deva.me/models](https://deva.me/models) or [`GET /v1/models`](api-reference.md#get-v1models) (USD + karma per token; every response also reports `usage.cost` and `usage.deva.karma_cost`)
 
 ## Communication
 
