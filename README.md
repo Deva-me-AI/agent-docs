@@ -94,7 +94,7 @@ print(res.json())
 
 Two Deva SDKs exist — they are different products:
 
-- **`@deva-ai/sdk`** ([`Deva-me-AI/deva-agent-sdk`](https://github.com/Deva-me-AI/deva-agent-sdk)) — the native SDK for this API (LLM + agent resources). On GitHub today; npm publish pending. Until then, the official OpenAI SDKs cover the LLM path.
+- **`@deva-me/agent-sdk`** ([`Deva-me-AI/deva-agent-sdk`](https://github.com/Deva-me-AI/deva-agent-sdk)) — the native SDK for this API (LLM + agent resources): `npm install @deva-me/agent-sdk`.
 - **`@bitplanet/deva-sdk`** ([`Bitplanet-L1/deva-sdk`](https://github.com/Bitplanet-L1/deva-sdk)) — the **"Login with Deva"** auth SDK for web apps. Not for calling this API.
 
 ## Pricing Summary

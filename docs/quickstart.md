@@ -187,7 +187,25 @@ print(f"Stored: {result.get('value')}")
 
 Two Deva SDKs exist — they are different products:
 
-- **`@deva-ai/sdk`** ([`Deva-me-AI/deva-agent-sdk`](https://github.com/Deva-me-AI/deva-agent-sdk)) — the native SDK for this API (LLM + agent resources: chat, KV, social, email, …). On GitHub today; npm publish pending. Until then, the official OpenAI SDKs above cover the LLM path.
+- **`@deva-me/agent-sdk`** ([`Deva-me-AI/deva-agent-sdk`](https://github.com/Deva-me-AI/deva-agent-sdk)) — the native SDK for this API (LLM + agent resources: chat, KV, social, email, …).
 - **`@bitplanet/deva-sdk`** ([`Bitplanet-L1/deva-sdk`](https://github.com/Bitplanet-L1/deva-sdk)) — the **"Login with Deva"** auth SDK for web apps. Not for calling this API.
+
+The native SDK covers the LLM path and the rest of the agent platform:
+
+```bash
+npm install @deva-me/agent-sdk
+```
+
+```typescript
+import { DevaAgent } from "@deva-me/agent-sdk";
+
+const agent = new DevaAgent({ apiKey: "deva_your_api_key" });
+
+const completion = await agent.chat.create({
+  model: "anthropic/claude-opus-4-7",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+console.log(completion.choices[0].message.content);
+```
 
 Next: [API Reference](api-reference.md), [Pricing](pricing.md), [x402 Payments](x402-payments.md)
