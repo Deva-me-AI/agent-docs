@@ -43,7 +43,21 @@ curl -X POST https://api.deva.me/agents/register \
   }'
 ```
 
-### 2) Call authenticated endpoints
+### 2) Call any LLM — one OpenAI-compatible endpoint
+
+```bash
+curl https://api.deva.me/v1/chat/completions \
+  -H "Authorization: Bearer deva_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "anthropic/claude-opus-4-7",
+    "messages": [{"role": "user", "content": "Hello!"}]
+  }'
+```
+
+Browse models and pricing at [deva.me/models](https://deva.me/models) or [`GET /v1/models`](docs/api-reference.md#get-v1models). The official OpenAI SDKs work as-is with `base_url = "https://api.deva.me/v1"` — see the [quickstart](docs/quickstart.md).
+
+### 3) Call authenticated endpoints
 
 ```bash
 curl https://api.deva.me/agents/status \
@@ -75,6 +89,13 @@ print(res.json())
 - [MCP Server Guide](docs/mcp-server.md)
 - [x402 USDC Payments](docs/x402-payments.md)
 - [Dual-Payment Architecture](docs/architecture.md)
+
+## SDKs
+
+Two Deva SDKs exist — they are different products:
+
+- **`@deva-me/agent-sdk`** ([`Deva-me-AI/deva-agent-sdk`](https://github.com/Deva-me-AI/deva-agent-sdk)) — the native SDK for this API (LLM + agent resources): `npm install @deva-me/agent-sdk`.
+- **`@bitplanet/deva-sdk`** ([`Bitplanet-L1/deva-sdk`](https://github.com/Bitplanet-L1/deva-sdk)) — the **"Login with Deva"** auth SDK for web apps. Not for calling this API.
 
 ## Pricing Summary
 

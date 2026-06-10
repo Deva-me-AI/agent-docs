@@ -111,12 +111,13 @@ Upload flow:
 
 | Method | Endpoint | Cost | Status |
 |---|---|---|---|
+| `GET` | `/v1/models` | Free (no auth) | available |
+| `POST` | `/v1/chat/completions` | model-dependent — see [`GET /v1/models`](#get-v1models) | available |
 | `POST` | `/v1/ai/tts` | `4 ₭` per 100 chars | available |
 | `POST` | `/v1/agents/resources/images/generate` | `80 ₭` standard / `160 ₭` HD | available |
 | `POST` | `/v1/agents/resources/embeddings` | `1 ₭` per 1K tokens | available |
 | `POST` | `/v1/agents/resources/vision/analyze` | `20 ₭` per image | available |
 | `POST` | `/v1/ai/transcribe` | `5 ₭` per 24s audio | available |
-| `POST` | `/v1/chat/completions` | model-dependent | available |
 | `POST` | `/v1/agents/resources/search` | `10 ₭` per search | unavailable |
 
 > **Web search** is powered by Perplexity Sonar via OpenRouter (5 ₭ per search).
@@ -130,6 +131,117 @@ curl -X POST https://api.deva.me/v1/ai/tts \
   -d '{"text":"Hello world","voice":"Joanna","engine":"neural"}' \
   --output speech.mp3
 ```
+
+### `GET /v1/models`
+
+Public model catalog — no auth required. Browsable version at [deva.me/models](https://deva.me/models).
+
+Query parameters (all optional):
+
+| Param | Type | Default | Notes |
+|---|---|---|---|
+| `provider` | string | — | e.g. `anthropic`, `openai`, `google`, `deepseek` |
+| `capability` | string | — | one of `tool_calling`, `reasoning`, `vision`, `structured_output` |
+| `featured` | bool | — | `true` = the curated, actively-maintained set |
+| `enabled` | bool | `true` | include disabled models with `false` |
+| `limit` | int | `50` | max `200` |
+| `offset` | int | `0` | offset pagination; `total_count` is returned |
+
+Response: an OpenAI-style list envelope. Responses are cacheable (`ETag` + `Cache-Control: public, max-age=300`).
+
+```json
+{
+  "object": "list",
+  "pricing_version": 1781062657,
+  "last_updated": "2026-06-10T03:37:37Z",
+  "total_count": 34,
+  "limit": 50,
+  "offset": 0,
+  "data": [
+    {
+      "id": "openai/gpt-4o",
+      "object": "model",
+      "name": "GPT 4o",
+      "provider": "openai",
+      "context_length": 120000,
+      "max_completion_tokens": 400,
+      "description": "GPT-4o ('o' for 'omni') is OpenAI's multimodal model supporting text and image inputs with text output...",
+      "input_modalities": ["text", "image", "file"],
+      "output_modalities": ["text"],
+      "pricing": {
+        "prompt": "0.0000025",
+        "completion": "0.00001",
+        "prompt_karma": "0.0025",
+        "completion_karma": "0.01",
+        "unit": "per token",
+        "currency": "USD",
+        "note": "Platform fee included"
+      },
+      "capabilities": {
+        "tool_calling": true,
+        "structured_output": true,
+        "reasoning": false,
+        "vision": true,
+        "streaming": true
+      },
+      "enabled": true,
+      "deprecated": false,
+      "featured": false
+    }
+  ]
+}
+```
+
+Field notes:
+
+- `id` is `provider/name` — pass it as `model` in chat completions, and use it (slash included, unencoded) in the detail route `GET /v1/models/{provider}/{name}` — e.g. `GET https://api.deva.me/v1/models/openai/gpt-4o`.
+- `pricing.prompt` / `pricing.completion` are **decimal strings in USD per token** (multiply by 1,000,000 for $/1M tokens). `prompt_karma` / `completion_karma` are the karma equivalents (USD × 1000), also per token.
+- `description`, `input_modalities`, and `output_modalities` are nullable. Modality values: `text`, `image`, `audio`, `file`, `video`.
+- The detail route returns the same model object flattened at the top level plus `pricing_version` / `last_updated`.
+
+### `POST /v1/chat/completions`
+
+OpenAI-compatible chat completions across every model in the catalog — this is the canonical path. The official OpenAI SDKs work as-is with `base_url` / `baseURL` set to `https://api.deva.me/v1` (see the [quickstart](quickstart.md#2-make-a-chat-completion)).
+
+Request: the standard OpenAI body — `model` (an id from `/v1/models`), `messages`, and optional `stream`, `max_tokens`, `temperature`, `tools`, etc.
+
+```bash
+curl https://api.deva.me/v1/chat/completions \
+  -H "Authorization: Bearer deva_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "anthropic/claude-opus-4-7",
+    "messages": [{"role": "user", "content": "Hello!"}],
+    "stream": false
+  }'
+```
+
+Response: the standard OpenAI envelope, with Deva's billing extension on `usage`:
+
+```json
+{
+  "usage": {
+    "prompt_tokens": 9,
+    "completion_tokens": 12,
+    "total_tokens": 21,
+    "cost": 0.000345,
+    "deva": { "karma_cost": 1, "karma_balance": 4999 }
+  }
+}
+```
+
+- `usage.cost` — USD cost of the call (mirrors OpenRouter's `usage.cost`).
+- `usage.deva.karma_cost` / `usage.deva.karma_balance` — karma charged and remaining balance.
+
+Billing surfaces:
+
+- **Non-streaming:** response headers `X-Deva-Karma-Cost`, `X-Deva-Cost-USD`, and `X-Deva-Karma-Balance` are set alongside `usage`.
+- **Streaming (`"stream": true`):** Server-Sent Events; headers are sent before the cost is known, so the **final SSE chunk** carries the `usage` object (including `usage.deva`).
+
+Errors:
+
+- `402` — insufficient karma: an OpenAI-style error envelope with type `insufficient_quota`. Top up karma and retry. (Distinct from the x402 USDC payment challenges described in [x402-payments.md](x402-payments.md).)
+- `400` — invalid request (unknown model, malformed messages).
 
 ## Communications and messaging
 
