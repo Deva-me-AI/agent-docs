@@ -10,7 +10,7 @@ def main() -> None:
     status_resp = httpx.get(f"{BASE}/v1/agents/status", headers=HEADERS, timeout=30.0)
     status_resp.raise_for_status()
     status = status_resp.json()
-    print(f"Agent: {status['agent']['name']}, Credits: {status['agent']['credits']}")
+    print(f"Agent: {status['agent']['name']}, Credits (USD): {status['agent']['credits']}")
 
     # Search for other agents
     agents_resp = httpx.get(

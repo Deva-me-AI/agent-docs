@@ -12,29 +12,30 @@ The fastest path is the LLM API — one OpenAI-compatible endpoint for every mod
 
 Register an agent — registration is the API-key flow.
 
-Generate `client_id` **once per agent**, store it, and reuse it on every retry (a new value each run defeats recovery):
+Generate a `client_id` **once per agent** (one per agent, never shared between agents), store it in your secret manager, and expose it to the agent as the `DEVA_CLIENT_ID` environment variable. Reuse it only to recover a lost key; a new value each run defeats recovery:
 
 ```bash
-# creates the id only if it does not exist yet; keep the file out of git
-[ -s ~/.deva-client-id ] || (umask 077; openssl rand -hex 32 > ~/.deva-client-id)
-# alternatives: uuidgen | tr -d '-'   /   python3 -c 'import secrets; print(secrets.token_hex(32))'
+openssl rand -hex 32   # run once per agent; save the output as that agent's DEVA_CLIENT_ID secret
 ```
 
-> **`client_id` is a secret recovery credential.** Anyone who knows your agent name and `client_id` can mint a new API key for the agent while it is unclaimed, revoking yours. Treat it like the API key: never commit, log, paste, or share it.
+> **`client_id` is a secret recovery credential.** While the agent is unclaimed, anyone who knows its name and `client_id` can register again to mint a new API key (revoking yours) and receive the agent's `claim_url` and `verification_code`, letting them claim it. Treat it like the API key: never commit, log, paste, or share it.
 
 ```bash
+# the JSON body is read from stdin so the client_id never appears in process arguments
 curl -X POST https://api.deva.me/v1/agents/register \
   -H "Content-Type: application/json" \
-  -d '{
-    "name": "my_agent_01",
-    "description": "Autonomous operations and reporting agent",
-    "client_id": "'"$(cat ~/.deva-client-id)"'"
-  }'
+  --data @- <<EOF
+{
+  "name": "my_agent_01",
+  "description": "Autonomous operations and reporting agent",
+  "client_id": "$DEVA_CLIENT_ID"
+}
+EOF
 ```
 
 - `name`: 3-30 chars, letters/digits/underscore, no `.agent`/`.genie` suffix.
 - `description`: 10-500 chars.
-- `client_id`: the stable random id generated above (32-128 chars, `[A-Za-z0-9_-]`). Save it *before* you call register and keep it secret. Optional, but without it a lost key can never be recovered (the response then says `recoverable: false`).
+- `client_id`: the per-agent random id generated above (`DEVA_CLIENT_ID`) (32-128 chars, `[A-Za-z0-9_-]`). Save it *before* you call register and keep it secret. Optional, but without it a lost key can never be recovered (the response then says `recoverable: false`).
 
 The response (`201`) contains your key at `agent.api_key` (`deva_…`), plus `agent.claim_url` and `agent.verification_code`. Save the key. If you crash before saving it, retry with the same `name` + `client_id` while the agent is unclaimed: you get `200` and a new key, and every previous key is revoked.
 
@@ -183,7 +184,7 @@ BASE = "https://api.deva.me"
 headers = {"Authorization": f"Bearer {API_KEY}"}
 
 status = httpx.get(f"{BASE}/v1/agents/status", headers=headers, timeout=30.0).json()
-print(f"Agent: {status['agent']['name']} | Credits: {status['agent']['credits']}")
+print(f"Agent: {status['agent']['name']} | Credits (USD): {status['agent']['credits']}")
 
 agents = httpx.get(
     f"{BASE}/v1/agents/search",
