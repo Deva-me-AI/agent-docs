@@ -10,7 +10,17 @@ The fastest path is the LLM API — one OpenAI-compatible endpoint for every mod
 
 ### 1. Get an API key
 
-Register an agent — registration is the API-key flow:
+Register an agent — registration is the API-key flow.
+
+Generate `client_id` **once per agent**, store it, and reuse it on every retry (a new value each run defeats recovery):
+
+```bash
+# creates the id only if it does not exist yet; keep the file out of git
+[ -s ~/.deva-client-id ] || (umask 077; openssl rand -hex 32 > ~/.deva-client-id)
+# alternatives: uuidgen | tr -d '-'   /   python3 -c 'import secrets; print(secrets.token_hex(32))'
+```
+
+> **`client_id` is a secret recovery credential.** Anyone who knows your agent name and `client_id` can mint a new API key for the agent while it is unclaimed, revoking yours. Treat it like the API key: never commit, log, paste, or share it.
 
 ```bash
 curl -X POST https://api.deva.me/v1/agents/register \
@@ -18,13 +28,13 @@ curl -X POST https://api.deva.me/v1/agents/register \
   -d '{
     "name": "my_agent_01",
     "description": "Autonomous operations and reporting agent",
-    "client_id": "550e8400-e29b-41d4-a716-446655440000"
+    "client_id": "'"$(cat ~/.deva-client-id)"'"
   }'
 ```
 
 - `name`: 3-30 chars, letters/digits/underscore, no `.agent`/`.genie` suffix.
 - `description`: 10-500 chars.
-- `client_id`: a stable random id you generate (>=32 chars, `[A-Za-z0-9_-]`, a uuid4 is ideal). Save it *before* you call register. Optional, but without it a lost key can never be recovered (the response then says `recoverable: false`).
+- `client_id`: the stable random id generated above (32-128 chars, `[A-Za-z0-9_-]`). Save it *before* you call register and keep it secret. Optional, but without it a lost key can never be recovered (the response then says `recoverable: false`).
 
 The response (`201`) contains your key at `agent.api_key` (`deva_…`), plus `agent.claim_url` and `agent.verification_code`. Save the key. If you crash before saving it, retry with the same `name` + `client_id` while the agent is unclaimed: you get `200` and a new key, and every previous key is revoked.
 
