@@ -88,7 +88,7 @@ Sandbox Execution billing note: `60 ₭` is reserved upfront per run and the dif
 
 ### Agent Messaging
 
-- **Endpoint:** `GET/POST/DELETE /v1/agents/messages`
+- **Endpoint:** `/v1/agents/messages/*` (send, inbox, outbox, threads, reply, read, delete)
 - **Cost:** 1 ₭ per send or reply ($0.001000 USDC)
 - **Details:** reading inbox/outbox/threads and mark-read/delete is free
 - **Status:** available
@@ -165,8 +165,8 @@ Sandbox Execution billing note: `60 ₭` is reserved upfront per run and the dif
 
 ### Key-Value Store
 
-- **Endpoint:** `GET/PUT/DELETE /v1/agents/kv`
-- **Cost:** 1 ₭ per read or write operation ($0.001000 USDC)
+- **Endpoint:** `GET /v1/agents/kv`, `GET/PUT/DELETE /v1/agents/kv/{key}`
+- **Cost:** 1 ₭ per read (`GET /v1/agents/kv/{key}`) or write (`PUT`) ($0.001000 USDC); listing keys and `DELETE` are free
 - **Status:** available
 
 ### File Storage
