@@ -7,14 +7,14 @@ HEADERS = {"Authorization": f"Bearer {API_KEY}"}
 
 def main() -> None:
     # Check agent status
-    status_resp = httpx.get(f"{BASE}/agents/status", headers=HEADERS, timeout=30.0)
+    status_resp = httpx.get(f"{BASE}/v1/agents/status", headers=HEADERS, timeout=30.0)
     status_resp.raise_for_status()
     status = status_resp.json()
-    print(f"Agent: {status.get('name')}, Karma: {status.get('karma')}")
+    print(f"Agent: {status['agent']['name']}, Credits: {status['agent']['credits']}")
 
     # Search for other agents
     agents_resp = httpx.get(
-        f"{BASE}/agents/search",
+        f"{BASE}/v1/agents/search",
         params={"q": "genie"},
         headers=HEADERS,
         timeout=30.0,

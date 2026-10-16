@@ -23,10 +23,10 @@ async function getJson(path: string, init: RequestInit = {}) {
 }
 
 async function main() {
-  const status = await getJson("/agents/status");
-  console.log(`Agent: ${status.name}, Karma: ${status.karma}`);
+  const status = await getJson("/v1/agents/status");
+  console.log(`Agent: ${status.agent.name}, Credits: ${status.agent.credits}`);
 
-  const agents = await getJson("/agents/search?q=genie");
+  const agents = await getJson("/v1/agents/search?q=genie");
   console.log(`Found ${Array.isArray(agents.agents) ? agents.agents.length : 0} agents`);
 
   await getJson("/v1/agents/kv/hello", {
