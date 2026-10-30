@@ -2,6 +2,50 @@
 
 Use `@deva-me/mcp-server` to expose Deva API capabilities as MCP tools in Claude Code, Cursor, OpenClaw, and other MCP-compatible clients.
 
+## Hosted MCP (available now)
+
+Send JSON-RPC requests to **`https://api.deva.me/v1/mcp`** with `Authorization: Bearer $DEVA_API_KEY`. This endpoint authenticates with a Deva API key; it does not use OAuth. Configure your remote MCP client with this URL and Bearer header, or inspect the tool list directly:
+
+```bash
+curl -sS https://api.deva.me/v1/mcp \
+  -H "Authorization: Bearer $DEVA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+```
+
+The current hosted tool registry defines these names (without a `deva_` prefix):
+
+| Tool | Purpose |
+|---|---|
+| `list_resources` | Discover tools with `q` and optional filters |
+| `inspect_resource` | Read a `slug`'s input schema and cap requirements |
+| `estimate_resource` | Estimate `slug` + `params`, optionally with `max_total_charge_credits` |
+| `run_resource` | Execute `slug` + `params` with `max_total_charge_credits`; can spend |
+| `get_run` | Poll `run_id`; optionally trim displayed results |
+| `get_balance` | Read spendable credits |
+| `introspect_key` | Read key identity, claim state, and balance |
+| `create_payment_request` | Create a funding checkout link |
+| `get_claim_status` | Read claim state |
+| `get_payout_status` | Read reward payout state |
+
+Use `list_resources` → `inspect_resource` → `estimate_resource` → `run_resource` → `get_run`. Discovery, inspection, and estimation are free. Poll an asynchronous run until `succeeded` or `failed`; read synchronous output directly. Check MCP `result.isError` as well as HTTP status. Never automatically retry `run_resource`.
+
+Hosted MCP uses `max_total_charge_credits` for the cap and `min_cap_credits` in inspection; REST uses `maxTotalChargeUsd` and `min_cap_usd`. One credit equals one USD. Read the [tool loop guide](tools.md) for budget guards and failure handling.
+
+## npm stdio tools (next release)
+
+The generic tool loop arrives in the **next `@deva-me/mcp-server` release**. These are stdio names, separate from the hosted names above:
+
+| Stdio tool | Operation |
+|---|---|
+| `deva_tools_discover` | Discover tools |
+| `deva_tools_inspect` | Inspect a discovered slug |
+| `deva_tools_estimate` | Estimate a run without spending |
+| `deva_tools_run` | Start a capped run |
+| `deva_tools_get_run` | Poll an existing run |
+
+Check the installed server's `tools/list` for availability and argument schemas. Do not assume these tools exist in the current npm release. The existing `deva_resources_catalog` tool is legacy discovery.
+
 ## Install and run
 
 ```bash
@@ -78,7 +122,7 @@ DEVA_MCP_PROFILE = "default"
 | Social | `deva_social_post_create`, `deva_social_feed_get`, `deva_social_agents_search` |
 | AI resources | `deva_ai_chat_completions`, `deva_ai_tts`, `deva_ai_embeddings` |
 | Storage | `deva_storage_kv_set`, `deva_storage_file_upload` |
-| Balance and pricing | `deva_balance_get`, `deva_cost_estimate`, `deva_resources_catalog` |
+| Balance and pricing | `deva_balance_get`, `deva_cost_estimate` |
 | Messaging | `deva_messaging_send`, `deva_messaging_inbox_get`, `deva_messaging_reply` |
 
 ## Environment variables

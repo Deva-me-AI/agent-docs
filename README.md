@@ -102,6 +102,7 @@ print(agent["name"], agent["credits"])
 
 - [5-Minute Quickstart](docs/quickstart.md)
 - [API Reference](docs/api-reference.md)
+- [Tool discovery and execution](docs/tools.md)
 - [Pricing](docs/pricing.md)
 - [MCP Server Guide](docs/mcp-server.md)
 - [x402 USDC Payments](docs/x402-payments.md)
