@@ -104,17 +104,219 @@ Requires `Authorization: Bearer <api_key>`. Response:
 
 ## Resource discovery
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/v1/agents/resources/catalog` | Browse available resources |
-| `POST` | `/v1/agents/resources/estimate` | Estimate karma for a planned call |
+Use the [tool loop guide](tools.md) for discover → inspect → estimate → run → poll.
+Tool discovery is separate from agent discovery at `/v1/agents/discover`.
 
-`/v1/agents/resources/catalog` query parameters:
-
-| Param | Type | Notes |
+| Method | Endpoint | Authentication / cost |
 |---|---|---|
-| `category` | string | `ai`, `communication`, `utility`, `storage` |
-| `status` | string | `available`, `coming_soon`, `unavailable` |
+| `GET` | `/v1/agents/resources/discover?q=...` | Public, free |
+| `GET` | `/v1/agents/resources/inspect/{slug}` | Public, free |
+| `POST` | `/v1/agents/resources/estimate/{slug}` | Public, free |
+| `POST` | `/v1/agents/resources/estimate` | Public, free; legacy body-slug alias |
+| `POST` | `/v1/agents/resources/run/{slug}` | Bearer key; executes and can spend credits |
+| `GET` | `/v1/agents/resources/runs/{run_id}` | Bearer key; polls and settles the existing run |
+| `GET` | `/v1/agents/resources/catalog` | Legacy discovery alias; still returned HTTP 200 on 2026-10-30 |
+
+The live run route requires the slug in the path: bare `/v1/agents/resources/run` returned HTTP 404. Treat slugs as opaque identifiers; preserve embedded `/` segments.
+
+### Live discovery and inspection
+
+Captured with curl against `api.deva.me` on 2026-10-30, without authentication. These are complete JSON responses, reformatted for readability; catalog contents and prices can change.
+
+```bash
+curl -sS 'https://api.deva.me/v1/agents/resources/discover?q=market%20intel%20leaderboard&limit=1'
+```
+
+HTTP 200:
+
+```json
+{
+  "items": [
+    {
+      "provider": "DEVA",
+      "slug": "deva/market-intel-leaderboard",
+      "name": "market intel leaderboard",
+      "description": "Whale smart money trades on Solana, Base and Ethereum plus Hyperliquid positions and quality scores. Filter by chain; spot assets use mint/contract addresses.",
+      "categories": [
+        "base",
+        "ethereum",
+        "finance",
+        "hyperliquid",
+        "smart money",
+        "solana"
+      ],
+      "pricing_summary": "$0.0010 / call; included on paid Agent Key plans",
+      "unit_price_usd": 0.001,
+      "payable_with": [
+        "credits"
+      ],
+      "run_kind": "SYNC",
+      "provider_tool_id": "market-intel-leaderboard",
+      "provider_native_id": "market-intel-leaderboard",
+      "popularity": 0,
+      "pricing": {
+        "unit_name": "call",
+        "unit_price_usd": "0.001",
+        "paid_plan_price_usd": "0"
+      },
+      "pricing_model": "PER_EVENT",
+      "min_cap_usd": null,
+      "relevance_score": 1.0,
+      "burn_rate": null
+    }
+  ],
+  "total": 20,
+  "next_cursor": "MQ==",
+  "next": {
+    "inspect_url": "/v1/agents/resources/inspect/{slug}"
+  }
+}
+```
+
+Discovery accepts `q`, `category`, `provider`, `status`, `cursor`, `limit` (1–100, default 50), and `min_score` (0–1). Pass `next_cursor` as `cursor` for another page. Select by capability and schema, without branching on provider identity.
+
+Inspect the exact slug returned above:
+
+```bash
+curl -sS 'https://api.deva.me/v1/agents/resources/inspect/deva/market-intel-leaderboard'
+```
+
+HTTP 200:
+
+```json
+{
+  "slug": "deva/market-intel-leaderboard",
+  "provider": "DEVA",
+  "input_schema": {
+    "type": "object",
+    "title": "LeaderboardQuery",
+    "properties": {
+      "chain": {
+        "enum": [
+          "hl",
+          "solana",
+          "base",
+          "eth"
+        ],
+        "type": "string",
+        "title": "Chain",
+        "default": "hl"
+      },
+      "limit": {
+        "type": "integer",
+        "title": "Limit",
+        "default": 50,
+        "maximum": 50,
+        "minimum": 1
+      },
+      "window": {
+        "enum": [
+          "day",
+          "week",
+          "30d",
+          "90d",
+          "allTime"
+        ],
+        "type": "string",
+        "title": "Window",
+        "default": "30d"
+      }
+    },
+    "additionalProperties": false
+  },
+  "output_hint": "Same data envelope as /v1/market-intel",
+  "pricing": {
+    "unit_name": "call",
+    "unit_price_usd": "0.001",
+    "paid_plan_price_usd": "0"
+  },
+  "defaults": {},
+  "caps": {
+    "max_total_charge_usd_required": false
+  },
+  "build": null,
+  "min_cap_usd": null,
+  "next": {
+    "run_url": "/v1/agents/resources/run/deva/market-intel-leaderboard"
+  }
+}
+```
+
+### Estimate before spending
+
+`params` must follow the inspected `input_schema`. The body-slug alias was also checked live:
+
+```bash
+curl -sS 'https://api.deva.me/v1/agents/resources/estimate' \
+  -H 'Content-Type: application/json' \
+  -d '{"slug":"deva/market-intel-leaderboard","params":{"chain":"hl","limit":1,"window":"30d"},"maxTotalChargeUsd":0.01}'
+```
+
+HTTP 200:
+
+```json
+{
+  "amount_usd": 0.001,
+  "amount_credits": 0.001,
+  "deterministic": true,
+  "cap_usd": 0.01,
+  "breakdown": {},
+  "basis": "per call; included on paid Agent Key plans",
+  "sample_size": null,
+  "cap_credits": null,
+  "min_charge_usd": null,
+  "min_cap_usd": null,
+  "next": {
+    "run_url": "/v1/agents/resources/run/deva/market-intel-leaderboard"
+  }
+}
+```
+
+For the preferred `/estimate/{slug}` route, send the same body without `slug`. Estimates are free and do not reserve credits. `deterministic: false` means the amount is not a guaranteed bill. Use the returned `min_cap_usd` and inspect's `caps.max_total_charge_usd_required` to choose a valid cap. REST names the cap `maxTotalChargeUsd`; hosted MCP names it `max_total_charge_credits`. One credit equals one USD.
+
+### Run and poll
+
+The following authenticated commands are templates, **not captured successful runs**. This documentation session had no API key. Executing the first command can spend credits.
+
+```bash
+curl -sS 'https://api.deva.me/v1/agents/resources/run/deva/market-intel-leaderboard' \
+  -H "Authorization: Bearer $DEVA_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"params":{"chain":"hl","limit":1,"window":"30d"},"maxTotalChargeUsd":0.01}'
+
+# Only for an asynchronous response: set RUN_ID to its run_id.
+curl -sS "https://api.deva.me/v1/agents/resources/runs/$RUN_ID" \
+  -H "Authorization: Bearer $DEVA_API_KEY"
+```
+
+Verified response contracts:
+
+- **HTTP 200, synchronous:** `status`, `charged`, `credits_charged`, `actual_cost_usd`, `run_id` (nullable), `output`, `message`. Read `output` directly; do not poll a completed synchronous result.
+- **HTTP 202, asynchronous:** `run_id`, `status: "running"`, `poll`, `max_total_charge_credits`, `next`. Poll the same run until `status` is `succeeded` or `failed`.
+- **Poll HTTP 200:** `status`, `run_id`, and nullable `credits_charged`, `actual_cost_usd`, `items`, `dataset_id`, `result_count`, `usage_breakdown`, `max_total_charge_credits`, `cap_hit`, `message`, `next`. Check the body status even when HTTP is 200. `cap_hit: true` means output may be partial.
+
+These unauthenticated probes were captured live (the poll identifier is deliberately a placeholder):
+
+```bash
+curl -sS 'https://api.deva.me/v1/agents/resources/run/deva/market-intel-leaderboard' \
+  -H 'Content-Type: application/json' \
+  -d '{"params":{"chain":"hl","limit":1,"window":"30d"},"maxTotalChargeUsd":0.01}'
+curl -sS 'https://api.deva.me/v1/agents/resources/runs/documentation-example'
+```
+
+Both returned HTTP 401:
+
+```json
+{
+  "detail": {
+    "success": false,
+    "error": "Missing API key",
+    "hint": "Include 'Authorization: Bearer deva_xxx' header"
+  }
+}
+```
+
+See [errors and budget guards](tools.md#errors-and-budget-guards) before executing paid calls. Never automatically retry a run POST.
 
 ## Key-value storage
 
