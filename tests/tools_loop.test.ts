@@ -21,9 +21,10 @@ async function execute(t: any, tail: any[], estimate: any = { amount_credits: 0.
 }
 
 test('sync output, cap, slug path and auth', async t => {
-  const { result, error, calls } = await execute(t, [[200, { status: 'succeeded', output: { ok: true } }]]);
+  const { result, error, calls } = await execute(t, [[200, { status: 'succeeded', output: { ok: true }, cap_hit: true }]]);
   assert.ifError(error);
   assert.equal(result?.output.ok, true);
+  assert.equal(result?.cap_hit, true);
   assert.equal(calls.length, 4);
   assert.equal(calls[0].headers.Authorization, undefined);
   assert.equal(calls[3].headers.Authorization, 'Bearer test-key');
@@ -76,3 +77,27 @@ test('live smoke without paid execution', { skip: !process.env.DEVA_API_KEY }, a
   assert.ok('amount_credits' in estimate);
   await assert.rejects(request('GET', '/runs/00000000-0000-0000-0000-000000000000', undefined, process.env.DEVA_API_KEY), /HTTP 404/);
 });
+
+for (const status of ['failed', 'running', 'unknown', undefined]) {
+  test(`sync non-success ${status} never polls or resubmits`, async t => {
+    const { error, calls } = await execute(t, [[200, { status }]]);
+    assert.match(String(error), /do not resubmit/);
+    assert.equal(calls.length, 4);
+  });
+}
+for (const response of [[201, { status: 'succeeded' }], [206, { run_id: 'r1' }],
+  [202, {}], [202, { run_id: null }], [202, { run_id: '' }]]) {
+  test(`unexpected success ${JSON.stringify(response)} never polls or resubmits`, async t => {
+    const { error, calls } = await execute(t, [response]);
+    assert.match(String(error), /do not resubmit/);
+    assert.equal(calls.length, 4);
+  });
+}
+for (const failure of [new Error('timeout'), [503, { error: 'unavailable' }]]) {
+  test(`poll error preserves resume guidance ${JSON.stringify(failure)}`, async t => {
+    const { error, calls } = await execute(t, [[202, { run_id: 'r1' }], failure]);
+    assert.match(String(error), /resume GET \/runs\/r1; do not resubmit/);
+    assert.ok(error instanceof Error && error.cause instanceof Error);
+    assert.equal(calls.length, 5);
+  });
+}

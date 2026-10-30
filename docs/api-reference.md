@@ -289,7 +289,7 @@ curl -sS "https://api.deva.me/v1/agents/resources/runs/$RUN_ID" \
   -H "Authorization: Bearer $DEVA_API_KEY"
 ```
 
-Verified response contracts:
+Expected response contracts (successful authenticated run/poll responses were not captured for this guide):
 
 - **HTTP 200, synchronous:** `status`, `charged`, `credits_charged`, `actual_cost_usd`, `run_id` (nullable), `output`, `message`. Read `output` directly; do not poll a completed synchronous result.
 - **HTTP 202, asynchronous:** `run_id`, `status: "running"`, `poll`, `max_total_charge_credits`, `next`. Poll the same run until `status` is `succeeded` or `failed`.

@@ -5,10 +5,19 @@ import math
 import os
 import sys
 import time
+from urllib.error import HTTPError
 from urllib.parse import quote, urlencode
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 BASE = 'https://api.deva.me/v1/agents/resources'
+
+
+class RejectRedirects(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise HTTPError(req.full_url, code, 'Redirect refused', headers, fp)
+
+
+_opener = build_opener(RejectRedirects())
 
 
 def request(method, path, body=None, key=None):
@@ -17,8 +26,8 @@ def request(method, path, body=None, key=None):
         headers['Authorization'] = f'Bearer {key}'
     req = Request(BASE + path, data=None if body is None else json.dumps(body).encode(),
                   headers=headers, method=method)
-    # urlopen does not retry POSTs. HTTP errors propagate to the caller.
-    with urlopen(req, timeout=60) as response:
+    # Never follow redirects or retry POSTs; credentials stay on the original request.
+    with _opener.open(req, timeout=60) as response:
         return response.status, json.load(response)
 
 
@@ -28,8 +37,8 @@ def run_loop(query, slug, params, budget, key, *, http=request, sleep=time.sleep
         raise ValueError('Set DEVA_API_KEY')
     if not math.isfinite(budget) or budget <= 0 or not isinstance(params, dict):
         raise ValueError('Require a positive finite budget and an object for params')
-    if max_polls < 1:
-        raise ValueError('max_polls must be positive')
+    if type(max_polls) is not int or max_polls < 1:
+        raise ValueError('max_polls must be a positive integer')
     _, page = http('GET', '/discover?' + urlencode({'q': query, 'limit': 100}))
     if not any(item['slug'] == slug for item in page['items']):
         raise ValueError('Slug not in this discovery page; refine your query')
@@ -49,7 +58,7 @@ def run_loop(query, slug, params, budget, key, *, http=request, sleep=time.sleep
     code, result = http('POST', '/run/' + path_slug, body, key)
     if code == 200:
         if result.get('status') != 'succeeded':
-            raise RuntimeError('Synchronous run failed: ' + str(result.get('message')))
+            raise RuntimeError('Synchronous run failed: ' + str(result.get('message')) + '; do not resubmit')
         return result
     if code != 202 or not result.get('run_id'):
         raise RuntimeError('Unexpected run response; do not resubmit')
@@ -57,7 +66,10 @@ def run_loop(query, slug, params, budget, key, *, http=request, sleep=time.sleep
     on_run(run_id)
     for _ in range(max_polls):
         sleep(2)
-        _, result = http('GET', '/runs/' + quote(run_id, safe=''), key=key)
+        try:
+            _, result = http('GET', '/runs/' + quote(run_id, safe=''), key=key)
+        except Exception as error:
+            raise RuntimeError(f'Poll failed; resume GET /runs/{quote(run_id, safe="")}; do not resubmit') from error
         if result['status'] == 'succeeded':
             return result
         if result['status'] != 'running':

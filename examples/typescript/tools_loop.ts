@@ -43,7 +43,7 @@ export async function runLoop(query: string, slug: string, params: Json, budget:
   // An ambiguous failure does not release the reservation or authorize another run.
   const [code, initial] = await http('POST', '/run/' + pathSlug, body, key);
   if (code === 200) {
-    if (initial.status !== 'succeeded') throw new Error(`Synchronous run failed: ${initial.message}`);
+    if (initial.status !== 'succeeded') throw new Error(`Synchronous run failed: ${initial.message}; do not resubmit`);
     return initial;
   }
   if (code !== 202 || !initial.run_id) throw new Error('Unexpected run response; do not resubmit');
@@ -51,7 +51,12 @@ export async function runLoop(query: string, slug: string, params: Json, budget:
   onRun(id);
   for (let i = 0; i < maxPolls; i++) {
     await sleep(2000);
-    const [, result] = await http('GET', '/runs/' + encodeURIComponent(id), undefined, key);
+    let result: Json;
+    try {
+      [, result] = await http('GET', '/runs/' + encodeURIComponent(id), undefined, key);
+    } catch (cause) {
+      throw new Error(`Poll failed; resume GET /runs/${encodeURIComponent(id)}; do not resubmit`, { cause });
+    }
     if (result.status === 'succeeded') return result;
     if (result.status !== 'running') throw new Error(`Run ${id}: ${result.status}; do not resubmit`);
   }

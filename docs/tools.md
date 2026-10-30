@@ -19,7 +19,7 @@ Discovery advertises `run_kind` (`SYNC` or `ASYNC`). Handle the actual run respo
 - HTTP **200** returns a synchronous result. Check `status`, read `output`, and record `credits_charged`. A nullable `run_id` is not an instruction to poll.
 - HTTP **202** returns `run_id` and `poll`. Wait between GETs (for example, two seconds) and stop at a terminal status. Terminal output is in `items`, with `result_count` and `credits_charged`. A successful HTTP response can still contain `status: "failed"`.
 
-A poll timeout does not cancel execution. Keep the ID and resume polling; do not submit another run. `cap_hit: true` means the result was truncated at the spending cap. Poll options `fields`, `max_items`, and `summary` only reduce the response displayed; they do not reduce the bill. Save large results to a file instead of copying them into model context.
+A poll timeout or transport error does not cancel execution. The examples include the run ID and resume path in poll errors. Keep the ID and resume polling; do not submit another run. `cap_hit: true` means output may be partial at the spending cap. The examples return the complete response, including this flag. Poll options `fields`, `max_items`, and `summary` only reduce the response displayed; they do not reduce the bill. Save large results to a file instead of copying them into model context.
 
 ## Errors and budget guards
 
@@ -32,13 +32,13 @@ A poll timeout does not cancel execution. Keep the ID and resume polling; do not
 | 400 / 422 | Invalid parameters or cap | Follow the inspected schema and error details. |
 | 503 | Provider unavailable | Preserve any known run ID and check it later. Do not automatically repeat the run POST. |
 
-**Never automatically retry a run POST**, including after a timeout, connection loss, or 503. The request may already have started an execution. The REST run route supports an `Idempotency-Key` header for intentional duplicate protection; keep the same key for the same intended request, but do not assume an ambiguous response means nothing ran.
+**Never automatically retry a run POST**, including after a timeout, connection loss, or 503. The request may already have started an execution. Support for the REST run route’s `Idempotency-Key` header was not verified by an authenticated capture for this guide. Do not rely on it to make resubmission safe after an ambiguous response.
 
 > **Budget guard:** Keep both a per-task credit budget and a maximum run count. Before each POST, require a positive finite cap no larger than your remaining task budget and no smaller than `min_cap_usd`. Compare `amount_credits` to your cap, but do not mistake an estimate for enforcement. Send `maxTotalChargeUsd` on the run itself. Reserve the full cap locally before submitting, and keep that reservation after ambiguous failures until reconciled. One credit equals one USD. Never raise a budget automatically to satisfy a tool minimum.
 
 ## Runnable examples and tests
 
-The examples use HTTP directly, accept an exact discovered slug plus schema-valid JSON, and submit at most one run. They fail closed on invalid caps, over-budget estimates, and unknown statuses. No run POST is retried.
+The examples use HTTP directly, accept an exact discovered slug plus schema-valid JSON, and submit at most one run. They fail closed on invalid caps, over-budget estimates, and unknown statuses. No run POST is retried. A missing amount or a non-deterministic estimate is not a guaranteed price; the validated cap sent to the server remains the spending limit.
 
 ```bash
 export DEVA_API_KEY=deva_your_api_key
