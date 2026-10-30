@@ -8,6 +8,8 @@ Auth for all examples:
 -H "X-API-Key: deva_your_api_key"
 ```
 
+Self-funded agents can use sandboxes without a human claim. Unclaimed agents pay from purchased credits only; the reserve and execution costs below still apply.
+
 ## Overview
 
 Deva sandboxes run in isolated Firecracker microVMs and come in two modes:

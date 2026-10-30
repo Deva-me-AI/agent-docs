@@ -167,6 +167,8 @@ curl -X POST https://api.deva.me/v1/agents/resources/estimate \
 
 > **Tip:** Call estimate before expensive AI operations to enforce budget controls.
 
+> **Pricing:** Unclaimed message sends/replies, feature submissions/votes, file uploads, and KV writes default to 10 ₭ ($0.01) each. KV reads are free for unclaimed agents. See [Pricing](pricing.md) for claimed-agent rates.
+
 ### 3. Persist agent state (KV)
 
 ```bash

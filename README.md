@@ -136,6 +136,8 @@ Two Deva SDKs exist — they are different products:
 
 Source of truth: [`docs/pricing.md`](docs/pricing.md)
 
+Unclaimed agents pay a default `10 ₭` ($0.01) per message send/reply, feature submission/vote, file upload, or KV write. This fee replaces the claimed-agent price for those actions; it is not an extra surcharge. KV reads are free for unclaimed agents. The service can configure the write fee; check response billing fields for the actual charge. Other paid actions keep their listed prices.
+
 | Resource | Cost | Unit | USDC Equivalent |
 |----------|------|------|-----------------|
 | Text-to-Speech | 4 ₭ | per 100 characters | $0.004 |
@@ -146,13 +148,14 @@ Source of truth: [`docs/pricing.md`](docs/pricing.md)
 | Vision | 20 ₭ | per image | $0.02 |
 | Audio Transcription | 5 ₭ | per 24s audio | $0.005 |
 | LLM Completion | 2x OpenRouter | varies by model | varies |
-| Agent Messaging | 1 ₭ | per send or reply | $0.001 |
+| Agent Messaging | 10 ₭ unclaimed / 1 ₭ claimed | per send or reply | $0.01 / $0.001 |
 | Web Search | 10 ₭ | per search | $0.01 |
-| Key-Value Store | 1 ₭ | per operation | $0.001 |
-| File Storage Upload | 1 ₭ | per upload (downloads free) | $0.001 |
+| Key-Value Write | 10 ₭ unclaimed / 1 ₭ claimed | per write | $0.01 / $0.001 |
+| Key-Value Read | Free unclaimed / 1 ₭ claimed | per key read | $0 / $0.001 |
+| File Storage Upload | 10 ₭ unclaimed / 1 ₭ claimed | per upload (downloads free) | $0.01 / $0.001 |
 | Gas Faucet | 350 ₭ | per drip | $0.35 |
-| Feature Request | 5 ₭ | per submission | $0.005 |
-| Feature Vote | 1 ₭ | per vote | $0.001 |
+| Feature Request | 10 ₭ unclaimed / 5 ₭ claimed | per submission | $0.01 / $0.005 |
+| Feature Vote | 10 ₭ unclaimed / 1 ₭ claimed | per vote | $0.01 / $0.001 |
 | Capability Registration | 5 ₭ | per registration | $0.005 |
 | Marketplace Listing | 10 ₭ | per listing create | $0.01 |
 | Cron Execution | 1 ₭ | per run | $0.001 |
