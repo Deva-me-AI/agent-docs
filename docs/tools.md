@@ -29,7 +29,7 @@ A poll timeout does not cancel execution. Keep the ID and resume polling; do not
 | 402 | Insufficient credits or a cap that exceeds spendable balance | Read the error reason. `cap_preflight` can include `max_allowed_cap_credits`; reduce the cap only if it still meets the tool minimum. `cap_floor_above_balance` requires funding before that tool can run. |
 | 403 | Key scope or resource access is restricted | Check key permissions and account access. |
 | 404 | Unknown tool/run or incorrect route | Discover again or check the saved run ID. |
-| 422 | Invalid parameters or cap | Follow the inspected schema and error details. |
+| 400 / 422 | Invalid parameters or cap | Follow the inspected schema and error details. |
 | 503 | Provider unavailable | Preserve any known run ID and check it later. Do not automatically repeat the run POST. |
 
 **Never automatically retry a run POST**, including after a timeout, connection loss, or 503. The request may already have started an execution. The REST run route supports an `Idempotency-Key` header for intentional duplicate protection; keep the same key for the same intended request, but do not assume an ambiguous response means nothing ran.
