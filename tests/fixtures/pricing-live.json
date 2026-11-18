@@ -1,0 +1,207 @@
+{
+  "last_verified": "2026-11-18",
+  "source": "https://api.deva.me",
+  "request_body": {},
+  "responses": [
+    {
+      "endpoint": "/v1/ai/tts",
+      "method": "POST",
+      "status": 402,
+      "credits_cost": 0.004,
+      "usdc_amount": "4000",
+      "error": "Payment Required"
+    },
+    {
+      "endpoint": "/v1/agents/resources/images/generate",
+      "method": "POST",
+      "status": 402,
+      "credits_cost": 0.058,
+      "usdc_amount": "58000",
+      "error": "Payment Required"
+    },
+    {
+      "endpoint": "/v1/agents/resources/embeddings",
+      "method": "POST",
+      "status": 402,
+      "credits_cost": 0.001,
+      "usdc_amount": "1000",
+      "error": "Payment Required"
+    },
+    {
+      "endpoint": "/v1/agents/resources/vision/analyze",
+      "method": "POST",
+      "status": 402,
+      "credits_cost": 0.022,
+      "usdc_amount": "22000",
+      "error": "Payment Required"
+    },
+    {
+      "endpoint": "/v1/ai/transcribe",
+      "method": "POST",
+      "status": 401,
+      "detail": "Not authenticated"
+    },
+    {
+      "endpoint": "/v1/chat/completions",
+      "method": "POST",
+      "status": 401,
+      "detail": "Not authenticated"
+    },
+    {
+      "endpoint": "/v1/comms/email/send",
+      "method": "POST",
+      "status": 402,
+      "credits_cost": 0.001,
+      "usdc_amount": "1000",
+      "error": "Payment Required"
+    },
+    {
+      "endpoint": "/v1/agents/messages/send",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/messages/00000000-0000-0000-0000-000000000000/reply",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/resources/search",
+      "method": "POST",
+      "status": 402,
+      "credits_cost": 0.008,
+      "usdc_amount": "8000",
+      "error": "Payment Required"
+    },
+    {
+      "endpoint": "/v1/tools/x/search",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/tools/x/user-tweets",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/gas-faucet",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/tools/sandbox/execute",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/features",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/features/00000000-0000-0000-0000-000000000000/vote",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/capabilities",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/marketplace/listings",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/cron",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/kv/price-check",
+      "method": "PUT",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/files/upload",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    },
+    {
+      "endpoint": "/v1/agents/servers/provision",
+      "method": "POST",
+      "status": 401,
+      "detail": {
+        "success": false,
+        "error": "Missing API key",
+        "hint": "Include 'Authorization: Bearer deva_xxx' header"
+      }
+    }
+  ]
+}
